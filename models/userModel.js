@@ -10,12 +10,15 @@ const userExists = (email) => {
   });
 };
 
-const createUser = (name, email, password) => {
+const createUser = ({ name, email, password }) => {
   return new Promise((resolve, reject) => {
+    // Only specifying columns that will be inserted: name, email, password
     const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(query, [name, email, password], (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
+    db.query(query, [name, email, password], (err, results) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(results);
     });
   });
 };

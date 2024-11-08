@@ -6,13 +6,13 @@ async function submitSignup() {
   try {
     const response = await fetch('/signup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      headers: { 'Content-Type': 'application/json' }, // Tells the backend this is JSON data
+      body: JSON.stringify({ name, email, password }) // Convert data to JSON format
     });
 
     const data = await response.json();
 
-    document.getElementById('response-message').textContent = data.message;
+    document.getElementById('response-message').textContent = data.message; //Handle response from thebackend
     if (response.ok) {
       document.getElementById('name').value = '';
       document.getElementById('email').value = '';

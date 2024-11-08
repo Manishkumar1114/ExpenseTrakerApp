@@ -13,8 +13,10 @@ const signup = async (req, res) => {
     if (userExists) {
       return res.status(409).json({ message: 'User already exists' });
     }
-
-    // Save the password directly (without hashing)
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+      await User.createUser({ name, email, password: hashedPassword });
+    
     await User.createUser({ name, email, password });
     res.status(201).json({ message: 'Signup successful!' });
   } catch (error) {
@@ -34,16 +36,18 @@ const login = async (req, res) => {
   }
 
   try {
+    //  Check if user exists in the database
     const user = await User.getUserByEmail(email);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    // Directly compare the plain text password
-    if (user.password !== password) {
+    
+    // Compare the plain text password with the hashed password stored in the database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
+   // Password matches
     res.status(200).json({ message: 'Login successful!' });
   } catch (error) {
     console.error('Error:', error);
