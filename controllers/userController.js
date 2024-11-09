@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -28,6 +30,7 @@ const signup = async (req, res) => {
 
 
 // Login page logic
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -36,18 +39,16 @@ const login = async (req, res) => {
   }
 
   try {
-    //  Check if user exists in the database
     const user = await User.getUserByEmail(email);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
-    // Compare the plain text password with the hashed password stored in the database
+
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-   // Password matches
+
     res.status(200).json({ message: 'Login successful!' });
   } catch (error) {
     console.error('Error:', error);

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker - Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <h2>Add Daily Expense</h2>
+    <form id="expense-form">
+      <input type="number" id="expense-amount" placeholder="Amount" required />
+      <input type="text" id="expense-description" placeholder="Description" required />
+      <select id="expense-category" required>
+        <option value="">Select Category</option>
+        <option value="Food">Food</option>
+        <option value="Petrol">Petrol</option>
+        <option value="Salary">Salary</option>
+        <option value="Others">Others</option>
+      </select>
+      <button type="button" onclick="submitExpense()">Add Expense</button>
+    </form>
+    <p id="expense-message"></p>
+
+    <h2>Your Expenses</h2>
+    <table id="expense-table">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Expenses will be populated here -->
+      </tbody>
+    </table>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

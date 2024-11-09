@@ -72,3 +72,94 @@ button {
 button:hover {
   background-color: #45a049;
 }
+
+
+/* General Styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 24px;
+  color: #333; /* Darker color for better contrast */
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;  /* Make it bold for emphasis */
+  padding: 10px 0;    /* Add some vertical padding for better spacing */
+  background-color: #f4f4f4; /* Optional: Add background color for contrast */
+  border-radius: 5px; /* Optional: Round the corners for style */
+}
+
+.dashboard-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Ensure no content gets cut off */
+}
+
+
+form {
+  display: grid;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+input[type="number"],
+input[type="text"],
+select,
+button {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus,
+button:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+#expense-message {
+  text-align: center;
+  color: green;
+  font-size: 18px;
+}
+
+
