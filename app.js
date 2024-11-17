@@ -22,6 +22,10 @@ app.post('/add-expense', authMiddleware, expenseController.addExpense);
 app.get('/get-expenses', authMiddleware, expenseController.getExpenses);
 app.delete('/expense/:id', authMiddleware, expenseController.deleteExpenseById);
 
+// Premium route
+app.post('/buy-premium', authMiddleware, userController.setUserPremium);
+app.get('/profile', authMiddleware, userController.getUserProfile); // New route to get user profile
+
 // Default route for undefined paths
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

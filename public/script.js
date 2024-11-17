@@ -45,12 +45,43 @@ async function submitLogin() {
     if (response.ok && data.token) {
       localStorage.setItem('user_ID', data.userID);
       localStorage.setItem('token', data.token);
-      console.log('Login successful, redirecting...');
+      localStorage.setItem('isPremium', data.isPremium); // Store premium status
       window.location.href = '/expenses.html';
     }
   } catch (error) {
     console.error('Error during login:', error);
     document.getElementById('login-response-message').textContent = 'An error occurred';
+  }
+}
+
+// Function to handle premium membership purchase
+async function buyPremium() {
+  if (confirm('Do you want to buy a premium membership?')) {
+    try {
+      const response = await fetch('/buy-premium', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('isPremium', 'true'); // Update premium status in local storage
+        const premiumButton = document.getElementById("buy-premium-btn");
+        premiumButton.textContent = "Now You Are a Premium User";
+        premiumButton.disabled = true;
+        premiumButton.style.backgroundColor = "#28a745";
+        premiumButton.style.cursor = "not-allowed";
+        alert(data.message);
+      } else {
+        alert('Failed to upgrade to premium: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error upgrading to premium:', error);
+      alert('An error occurred while upgrading to premium.');
+    }
   }
 }
 
@@ -155,9 +186,23 @@ function displayExpenses(expenses) {
   });
 }
 
-// Fetch expenses on page load
+// Function to check premium status on page load
+function checkPremiumStatus() {
+  const isPremium = localStorage.getItem('isPremium') === 'true';
+  const premiumButton = document.getElementById('buy-premium-btn');
+
+  if (isPremium) {
+    premiumButton.textContent = "Now You Are a Premium User";
+    premiumButton.disabled = true;
+    premiumButton.style.backgroundColor = "#28a745";
+    premiumButton.style.cursor = "not-allowed";
+  }
+}
+
+// Fetch expenses and check premium status on page load
 window.onload = () => {
   if (document.getElementById('expense-table')) {
     fetchExpenses();
   }
+  checkPremiumStatus();
 };

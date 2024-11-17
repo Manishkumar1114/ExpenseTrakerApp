@@ -34,4 +34,14 @@ const getUserByEmail = (email) => {
   });
 };
 
-module.exports = { userExists, createUser , getUserByEmail };
+const setUserPremium = (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = 'UPDATE users SET is_premium = TRUE WHERE id = ?';
+    db.query(query, [userId], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
+module.exports = { userExists, createUser , getUserByEmail , setUserPremium};
