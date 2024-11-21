@@ -4,7 +4,8 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',          
   password: 'Manish@123', 
-  database: 'expense_tracker' 
+  database: 'expense_tracker',
+  multipleStatements: true // Allows running multiple SQL statements in one query
 });
 
 // Connect to MySQL database

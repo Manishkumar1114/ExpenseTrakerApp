@@ -2,21 +2,35 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
+// Import transaction utilities
+const {
+  startTransaction,
+  commitTransaction,
+  rollbackTransaction,
+} = require('../models/expenseModel');
+
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please fill all fields' });
   }
   try {
+    await startTransaction(); // Begin transaction
+
     const userExists = await User.getUserByEmail(email);
     if (userExists) {
+      await rollbackTransaction(); // Rollback if user already exists
       return res.status(409).json({ message: 'User already exists' });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.createUser({ name, email, password: hashedPassword });
+
+    await commitTransaction(); // Commit the transaction
     res.status(201).json({ message: 'Signup successful!' });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error during signup:', error);
+    await rollbackTransaction(); // Rollback on failure
     res.status(500).json({ message: 'Database error' });
   }
 };
@@ -47,13 +61,12 @@ const login = async (req, res) => {
       isPremium: !!user.is_premium, // Ensure is_premium is returned as a boolean
     });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error during login:', error);
     res.status(500).json({ message: 'Database error' });
   }
 };
 
-
-// New function to get user profile with premium status
+// Function to get user profile with premium status
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.getUserById(req.userId);
@@ -62,17 +75,21 @@ const getUserProfile = async (req, res) => {
     }
     res.status(200).json({ isPremium: user.is_premium });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching user profile:', error);
     res.status(500).json({ message: 'Database error' });
   }
 };
+
 const setUserPremium = async (req, res) => {
   const userId = req.userId;
   try {
+    await startTransaction(); // Begin transaction
     await User.setUserPremium(userId);
+    await commitTransaction(); // Commit transaction
     res.status(200).json({ message: 'You are now a premium member!' });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error setting premium status:', error);
+    await rollbackTransaction(); // Rollback on failure
     res.status(500).json({ message: 'Failed to update premium status' });
   }
 };
