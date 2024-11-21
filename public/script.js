@@ -43,9 +43,11 @@ async function submitLogin() {
     document.getElementById('login-response-message').textContent = data.message;
 
     if (response.ok && data.token) {
+      // Store token and user details
       localStorage.setItem('user_ID', data.userID);
       localStorage.setItem('token', data.token);
       localStorage.setItem('isPremium', data.isPremium); // Store premium status
+      // Redirect to the dashboard
       window.location.href = '/expenses.html';
     }
   } catch (error) {
@@ -65,7 +67,6 @@ async function buyPremium() {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem('isPremium', 'true'); // Update premium status in local storage
@@ -186,23 +187,74 @@ function displayExpenses(expenses) {
   });
 }
 
+// Function to fetch leaderboard data without a time frame
+async function fetchLeaderboard() {
+  try {
+    const response = await fetch('http://localhost:3000/leaderboard', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`, // Include token if required
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch leaderboard data');
+    }
+
+    const data = await response.json();
+    displayLeaderboard(data.leaderboard);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+  }
+}
+
+// Function to display leaderboard data
+function displayLeaderboard(leaderboard) {
+  const leaderboardTableBody = document.getElementById('leaderboard-table').querySelector('tbody');
+  leaderboardTableBody.innerHTML = ''; // Clear any existing rows
+
+  if (!leaderboard || leaderboard.length === 0) {
+    leaderboardTableBody.innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+    return;
+  }
+
+  leaderboard.forEach((entry, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${entry.user}</td>
+      <td>${entry.totalExpenses}</td>
+    `;
+    leaderboardTableBody.appendChild(row);
+  });
+}
+
 // Function to check premium status on page load
 function checkPremiumStatus() {
   const isPremium = localStorage.getItem('isPremium') === 'true';
   const premiumButton = document.getElementById('buy-premium-btn');
-
   if (isPremium) {
     premiumButton.textContent = "Now You Are a Premium User";
     premiumButton.disabled = true;
     premiumButton.style.backgroundColor = "#28a745";
     premiumButton.style.cursor = "not-allowed";
+  } else {
+    premiumButton.textContent = "Buy Premium Membership";
+    premiumButton.disabled = false;
+    premiumButton.style.backgroundColor = ""; // Reset styles
+    premiumButton.style.cursor = "";
   }
 }
 
-// Fetch expenses and check premium status on page load
+
+// Fetch expenses and leaderboard on page load
 window.onload = () => {
   if (document.getElementById('expense-table')) {
     fetchExpenses();
   }
-  checkPremiumStatus();
+  if (document.getElementById('leaderboard-table')) {
+    fetchLeaderboard();
+  }
+  checkPremiumStatus(); // Check premium status on every load
 };
+

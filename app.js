@@ -11,9 +11,15 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Route to handle signup and login
+// Debugging Middleware
+app.use((req, res, next) => {
+  console.log(`Incoming Request: ${req.method} ${req.path}`);
+  next();
+});
+
+// User routes
 app.post('/signup', userController.signup);
 app.post('/login', userController.login);
 
@@ -22,16 +28,19 @@ app.post('/add-expense', authMiddleware, expenseController.addExpense);
 app.get('/get-expenses', authMiddleware, expenseController.getExpenses);
 app.delete('/expense/:id', authMiddleware, expenseController.deleteExpenseById);
 
-// Premium route
+// Premium routes
 app.post('/buy-premium', authMiddleware, userController.setUserPremium);
-app.get('/profile', authMiddleware, userController.getUserProfile); // New route to get user profile
+app.get('/profile', authMiddleware, userController.getUserProfile);
+
+// Leaderboard route
+app.get('/leaderboard', authMiddleware, expenseController.getLeaderboard);
 
 // Default route for undefined paths
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

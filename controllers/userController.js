@@ -35,18 +35,23 @@ const login = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    // Generate a token with the user's ID
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ 
-      message: 'Login successful!', 
-      token, 
-      userID: user.id, 
-      isPremium: user.is_premium // Return premium status
+
+    // Respond with the token, userID, and premium status
+    res.status(200).json({
+      message: 'Login successful!',
+      token,
+      userID: user.id,
+      isPremium: !!user.is_premium, // Ensure is_premium is returned as a boolean
     });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Database error' });
   }
 };
+
 
 // New function to get user profile with premium status
 const getUserProfile = async (req, res) => {
@@ -61,7 +66,6 @@ const getUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Database error' });
   }
 };
-
 const setUserPremium = async (req, res) => {
   const userId = req.userId;
   try {
