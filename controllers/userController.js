@@ -9,32 +9,30 @@ const {
   rollbackTransaction,
 } = require('../models/expenseModel');
 
+
+// Function to handle signup
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please fill all fields' });
   }
   try {
-    await startTransaction(); // Begin transaction
-
     const userExists = await User.getUserByEmail(email);
     if (userExists) {
-      await rollbackTransaction(); // Rollback if user already exists
       return res.status(409).json({ message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.createUser({ name, email, password: hashedPassword });
 
-    await commitTransaction(); // Commit the transaction
     res.status(201).json({ message: 'Signup successful!' });
   } catch (error) {
     console.error('Error during signup:', error);
-    await rollbackTransaction(); // Rollback on failure
     res.status(500).json({ message: 'Database error' });
   }
 };
 
+// Function to handle login
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -50,15 +48,12 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate a token with the user's ID
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    // Respond with the token, userID, and premium status
     res.status(200).json({
       message: 'Login successful!',
       token,
       userID: user.id,
-      isPremium: !!user.is_premium, // Ensure is_premium is returned as a boolean
+      isPremium: !!user.is_premium,
     });
   } catch (error) {
     console.error('Error during login:', error);

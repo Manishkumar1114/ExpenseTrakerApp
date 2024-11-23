@@ -43,11 +43,9 @@ async function submitLogin() {
     document.getElementById('login-response-message').textContent = data.message;
 
     if (response.ok && data.token) {
-      // Store token and user details
       localStorage.setItem('user_ID', data.userID);
       localStorage.setItem('token', data.token);
-      localStorage.setItem('isPremium', data.isPremium); // Store premium status
-      // Redirect to the dashboard
+      localStorage.setItem('isPremium', data.isPremium);
       window.location.href = '/expenses.html';
     }
   } catch (error) {
@@ -243,6 +241,66 @@ function checkPremiumStatus() {
     premiumButton.disabled = false;
     premiumButton.style.backgroundColor = ""; // Reset styles
     premiumButton.style.cursor = "";
+  }
+}
+
+// Function to handle forgot password form display
+function showForgotPasswordForm() {
+  const form = document.getElementById('forgot-password-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Function to handle forgot password submission
+async function submitForgotPassword() {
+  const email = document.getElementById('reset-email').value;
+
+  if (!email) {
+    document.getElementById('forgot-password-response-message').textContent = 'Email is required.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/password/forgotpassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    document.getElementById('forgot-password-response-message').textContent = data.message;
+  } catch (error) {
+    console.error('Error during forgot password:', error);
+    document.getElementById('forgot-password-response-message').textContent = 'An error occurred.';
+  }
+}
+
+// Function to reset password
+async function submitResetPassword() {
+  const newPassword = document.getElementById('new-password').value;
+  const resetToken = new URLSearchParams(window.location.search).get('token');
+
+  if (!newPassword || !resetToken) {
+    document.getElementById('reset-password-response-message').textContent = 'Password and token are required.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/password/resetpassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: resetToken, newPassword }),
+    });
+
+    const data = await response.json();
+    document.getElementById('reset-password-response-message').textContent = data.message;
+
+    if (response.ok) {
+      alert('Password reset successful!');
+      window.location.href = '/login.html';
+    }
+  } catch (error) {
+    console.error('Error during password reset:', error);
+    document.getElementById('reset-password-response-message').textContent = 'An error occurred.';
   }
 }
 

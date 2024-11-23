@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const userController = require('./controllers/userController');
 const expenseController = require('./controllers/expenseController');
+const passwordController = require('./controllers/passwordController'); // Correct path
 const authMiddleware = require('./middleware/authMiddleware');
 const path = require('path');
 
@@ -23,6 +24,10 @@ app.use((req, res, next) => {
 app.post('/signup', userController.signup);
 app.post('/login', userController.login);
 
+// Password routes
+app.post('/password/forgotpassword', passwordController.forgotPassword); // Ensure properly exported
+app.post('/password/reset', passwordController.resetPassword); // Ensure properly exported
+
 // Expense routes
 app.post('/add-expense', authMiddleware, expenseController.addExpense);
 app.get('/get-expenses', authMiddleware, expenseController.getExpenses);
@@ -38,6 +43,12 @@ app.get('/leaderboard', authMiddleware, expenseController.getLeaderboard);
 // Default route for undefined paths
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
+});
+
+// Global error-handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
 });
 
 // Start server

@@ -54,5 +54,49 @@ const setUserPremium = (userId) => {
     });
   });
 };
+// Save reset token and expiration in the database
+const saveResetToken = (email, token, expiration) => {
+  return new Promise((resolve, reject) => {
+    const query = 'UPDATE users SET reset_token = ?, reset_token_expiration = ? WHERE email = ?';
+    db.query(query, [token, expiration, email], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
 
-module.exports = { userExists, createUser, getUserByEmail, getUserById, setUserPremium };
+// Verify reset token and expiration
+const verifyResetToken = (token) => {
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiration > NOW()';
+    db.query(query, [token], (err, results) => {
+      if (err) reject(err);
+      else resolve(results[0]);
+    });
+  });
+};
+
+
+// Update user password
+const updatePassword = (email, hashedPassword) => {
+  return new Promise((resolve, reject) => {
+    const query = 'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiration = NULL WHERE email = ?';
+    db.query(query, [hashedPassword, email], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
+module.exports = {
+  userExists,
+  createUser,
+  getUserByEmail,
+  getUserById,
+  setUserPremium,
+  saveResetToken,
+  verifyResetToken,
+  updatePassword,
+};
+
+

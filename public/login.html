@@ -13,6 +13,13 @@
     <input type="password" id="login-password" placeholder="Password" required />
     <button onclick="submitLogin()">Login</button>
     <p id="login-response-message"></p>
+    <button id="forgot-password-btn" onclick="showForgotPasswordForm()">Forgot Password?</button>
+    <div id="forgot-password-form" style="display: none;">
+      <h3>Reset Password</h3>
+      <input type="email" id="reset-email" placeholder="Enter your email" required />
+      <button onclick="submitForgotPassword()">Submit</button>
+      <p id="forgot-password-response-message"></p>
+    </div>
     <!-- Link to Signup Page -->
     <p>Don't have an account? <a href="index.html">Signup</a></p>
   </div>

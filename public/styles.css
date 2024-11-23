@@ -52,6 +52,19 @@ body {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+/* Add margin to buttons */
+#login-btn {
+  margin-bottom: 15px; /* Adds space below the login button */
+}
+/* Forgot password button styling */
+#forgot-password-btn {
+  background-color: transparent;
+  border: none;
+  color: #ef0b25;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
 
 .login-container button:hover {
   background-color: #218838;
