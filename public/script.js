@@ -274,13 +274,23 @@ async function submitForgotPassword() {
   }
 }
 
-// Function to reset password
-async function submitResetPassword() {
-  const newPassword = document.getElementById('new-password').value;
-  const resetToken = new URLSearchParams(window.location.search).get('token');
+// Function to reset the password
+async function submitResetPassword(event) {
+  event.preventDefault();
 
-  if (!newPassword || !resetToken) {
-    document.getElementById('reset-password-response-message').textContent = 'Password and token are required.';
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+  const resetToken = new URLSearchParams(window.location.search).get('token'); // Extract token from URL
+
+  if (!newPassword || !confirmPassword) {
+    document.getElementById('reset-password-response-message').textContent =
+      'Both fields are required.';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    document.getElementById('reset-password-response-message').textContent =
+      'Passwords do not match.';
     return;
   }
 
@@ -292,17 +302,24 @@ async function submitResetPassword() {
     });
 
     const data = await response.json();
-    document.getElementById('reset-password-response-message').textContent = data.message;
+    document.getElementById('reset-password-response-message').textContent =
+      data.message;
 
     if (response.ok) {
       alert('Password reset successful!');
-      window.location.href = '/login.html';
+      window.location.href = '/login.html'; // Redirect to login page after reset
     }
   } catch (error) {
-    console.error('Error during password reset:', error);
-    document.getElementById('reset-password-response-message').textContent = 'An error occurred.';
+    console.error('Error resetting password:', error);
+    document.getElementById('reset-password-response-message').textContent =
+      'An error occurred.';
   }
 }
+
+// Attach event listener to the Reset Password form
+document
+  .getElementById('reset-password-form')
+  ?.addEventListener('submit', submitResetPassword);
 
 
 // Fetch expenses and leaderboard on page load

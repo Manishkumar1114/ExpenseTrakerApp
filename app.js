@@ -27,6 +27,7 @@ app.post('/login', userController.login);
 // Password routes
 app.post('/password/forgotpassword', passwordController.forgotPassword); // Ensure properly exported
 app.post('/password/reset', passwordController.resetPassword); // Ensure properly exported
+app.get('/password/resetpassword/:id', passwordController.getResetPasswordPage);
 
 // Expense routes
 app.post('/add-expense', authMiddleware, expenseController.addExpense);

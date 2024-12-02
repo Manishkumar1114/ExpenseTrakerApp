@@ -2,15 +2,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-// Import transaction utilities
+// Transaction utilities
 const {
   startTransaction,
   commitTransaction,
   rollbackTransaction,
 } = require('../models/expenseModel');
 
-
-// Function to handle signup
+// Handle user signup
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -32,7 +31,7 @@ const signup = async (req, res) => {
   }
 };
 
-// Function to handle login
+// Handle user login
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -61,7 +60,7 @@ const login = async (req, res) => {
   }
 };
 
-// Function to get user profile with premium status
+// Get user profile
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.getUserById(req.userId);
@@ -75,6 +74,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// Set user to premium
 const setUserPremium = async (req, res) => {
   const userId = req.userId;
   try {

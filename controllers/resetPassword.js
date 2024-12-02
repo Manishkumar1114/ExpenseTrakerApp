@@ -1,5 +1,4 @@
-const bcrypt = require('bcrypt');
-const User = require('../models/userModel');
+const { verifyResetRequest, deactivateResetRequest } = require('../models/userModel'); // Import model methods
 
 exports.resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
@@ -9,17 +8,27 @@ exports.resetPassword = async (req, res) => {
   }
 
   try {
-    const user = await User.verifyResetToken(token);
-    if (!user) {
+    // Verify the reset request
+    const resetRequest = await verifyResetRequest(token);
+    if (!resetRequest) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
+    const userId = resetRequest.userId;
+
+    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.updatePassword(user.email, hashedPassword);
+
+    // Update the user's password in the database
+    await User.updatePasswordById(userId, hashedPassword);
+
+    // Deactivate the reset request
+    await deactivateResetRequest(token);
 
     res.status(200).json({ message: 'Password reset successfully!' });
   } catch (error) {
-    console.error('Error resetting password:', error);
+    console.error('Error in resetPassword:', error);
     res.status(500).json({ message: 'Error resetting password' });
   }
 };
+

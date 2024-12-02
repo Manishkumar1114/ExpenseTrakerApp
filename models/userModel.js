@@ -1,4 +1,5 @@
 const db = require('../utils/database');
+const { v4: uuidv4 } = require('uuid');
 
 // Check if a user exists by email
 const userExists = (email) => {
@@ -54,39 +55,66 @@ const setUserPremium = (userId) => {
     });
   });
 };
-// Save reset token and expiration in the database
-const saveResetToken = (email, token, expiration) => {
+
+// Save reset request in `ForgotPasswordRequests`
+const saveResetRequest = (userId, requestId) => {
   return new Promise((resolve, reject) => {
-    const query = 'UPDATE users SET reset_token = ?, reset_token_expiration = ? WHERE email = ?';
-    db.query(query, [token, expiration, email], (err, results) => {
+    const query = `
+      INSERT INTO ForgotPasswordRequests (id, userId, isActive) 
+      VALUES (?, ?, 1)`; // Use 1 for isActive
+    db.query(query, [requestId, userId], (err, results) => {
       if (err) reject(err);
       else resolve(results);
     });
   });
 };
 
-// Verify reset token and expiration
-const verifyResetToken = (token) => {
+// Verify reset request in `ForgotPasswordRequests`
+const verifyResetRequest = (requestId) => {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiration > NOW()';
-    db.query(query, [token], (err, results) => {
+    const query = `
+      SELECT * FROM ForgotPasswordRequests 
+      WHERE id = ? AND isActive = 1`; // Check if request is active
+    db.query(query, [requestId], (err, results) => {
       if (err) reject(err);
-      else resolve(results[0]);
+      else resolve(results[0]); // Return the request if found
     });
   });
-};
+};  
 
 
-// Update user password
-const updatePassword = (email, hashedPassword) => {
+// Deactivate reset request after use
+const deactivateResetRequest = (requestId) => {
   return new Promise((resolve, reject) => {
-    const query = 'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiration = NULL WHERE email = ?';
-    db.query(query, [hashedPassword, email], (err, results) => {
+    const query = `
+      UPDATE ForgotPasswordRequests 
+      SET isActive = 0 
+      WHERE id = ?`;
+    db.query(query, [requestId], (err, results) => {
       if (err) reject(err);
       else resolve(results);
     });
   });
 };
+
+const updatePasswordById = (userId, hashedPassword) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      UPDATE users 
+      SET password = ? 
+      WHERE id = ?`;
+    db.query(query, [hashedPassword, userId], (err, results) => {
+      if (err) {
+        console.error('Error updating password:', err); // Add error logging
+        reject(err);
+      } else {
+        console.log('Password updated successfully:', results); // Add logging for successful update
+        resolve(results);
+      }
+    });
+  });
+};
+
 
 module.exports = {
   userExists,
@@ -94,9 +122,8 @@ module.exports = {
   getUserByEmail,
   getUserById,
   setUserPremium,
-  saveResetToken,
-  verifyResetToken,
-  updatePassword,
+  updatePasswordById,
+  saveResetRequest,
+  verifyResetRequest,
+  deactivateResetRequest,
 };
-
-
