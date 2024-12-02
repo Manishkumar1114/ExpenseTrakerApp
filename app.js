@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const userController = require('./controllers/userController');
 const expenseController = require('./controllers/expenseController');
-const passwordController = require('./controllers/passwordController'); // Correct path
+const passwordController = require('./controllers/passwordController');
 const authMiddleware = require('./middleware/authMiddleware');
 const path = require('path');
 
@@ -25,8 +25,8 @@ app.post('/signup', userController.signup);
 app.post('/login', userController.login);
 
 // Password routes
-app.post('/password/forgotpassword', passwordController.forgotPassword); // Ensure properly exported
-app.post('/password/reset', passwordController.resetPassword); // Ensure properly exported
+app.post('/password/forgotpassword', passwordController.forgotPassword);
+app.post('/password/resetpassword', passwordController.resetPassword);
 app.get('/password/resetpassword/:id', passwordController.getResetPasswordPage);
 
 // Expense routes
@@ -37,6 +37,9 @@ app.delete('/expense/:id', authMiddleware, expenseController.deleteExpenseById);
 // Premium routes
 app.post('/buy-premium', authMiddleware, userController.setUserPremium);
 app.get('/profile', authMiddleware, userController.getUserProfile);
+
+// Download expenses route
+app.get('/download-expenses', authMiddleware, expenseController.downloadExpenses);
 
 // Leaderboard route
 app.get('/leaderboard', authMiddleware, expenseController.getLeaderboard);

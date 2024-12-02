@@ -336,3 +336,36 @@ tbody tr:hover {
 .view-leaderboard-btn:hover {
   background-color: #0056b3;
 }
+
+/* Style for the Download Expenses button */
+#download-expenses-btn {
+  background-color: #007bff; /* Blue color similar to other buttons */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#download-expenses-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+/* Style for the Premium User label */
+#premium-user-label {
+  background-color: #28a745; /* Green for Premium label */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  position: absolute;
+  top: 20px;
+  right: 140px; /* Adjust based on spacing */
+}

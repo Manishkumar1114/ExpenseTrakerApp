@@ -8,6 +8,8 @@ const {
   deleteExpenseById,
   getLeaderboard,
 } = require('../models/expenseModel');
+const { generateCSV } = require('../utils/csvGenerator');
+const path = require('path');
 
 exports.addExpense = async (req, res) => {
   const { amount, description, category } = req.body;
@@ -29,7 +31,6 @@ exports.addExpense = async (req, res) => {
   }
 };
 
-
 exports.getExpenses = async (req, res) => {
   try {
     const expenses = await getAllExpenses(req.userId);
@@ -39,6 +40,35 @@ exports.getExpenses = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch expenses' });
   }
 };
+
+exports.downloadExpenses = async (req, res) => {
+  try {
+    const expenses = await getAllExpenses(req.userId);
+    if (!expenses || expenses.length === 0) {
+      return res.status(404).json({ message: 'No expenses found to download' });
+    }
+
+    const csvData = generateCSV(expenses);
+    const fileName = `expenses_${req.userId}_${Date.now()}.csv`;
+    const filePath = path.join(__dirname, '../downloads', fileName);
+
+    require('fs').writeFileSync(filePath, csvData);
+
+    res.download(filePath, fileName, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(500).json({ message: 'Error downloading file' });
+      }
+
+      // Clean up file after download
+      require('fs').unlinkSync(filePath);
+    });
+  } catch (error) {
+    console.error('Error downloading expenses:', error);
+    res.status(500).json({ message: 'Failed to download expenses' });
+  }
+};
+
 
 exports.deleteExpenseById = async (req, res) => {
   try {

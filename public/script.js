@@ -123,6 +123,7 @@ async function submitExpense() {
   }
 }
 
+
 // Function to fetch expenses
 async function fetchExpenses() {
   try {
@@ -170,7 +171,7 @@ async function deleteExpense(id) {
 
 // Function to display expenses on the page
 function displayExpenses(expenses) {
-  const expenseTable = document.getElementById('expense-table');
+  const expenseTable = document.getElementById('expense-table').querySelector('tbody');
   expenseTable.innerHTML = ''; // Clear the table before populating
 
   expenses.forEach((expense) => {
@@ -179,6 +180,7 @@ function displayExpenses(expenses) {
       <td>${expense.amount}</td>
       <td>${expense.description}</td>
       <td>${expense.category}</td>
+      <td>${expense.date || 'N/A'}</td>
       <td><button onclick="deleteExpense('${expense.id}')">Delete</button></td>
     `;
     expenseTable.appendChild(row);
@@ -227,22 +229,58 @@ function displayLeaderboard(leaderboard) {
   });
 }
 
-// Function to check premium status on page load
+// Function to check premium status and update UI
 function checkPremiumStatus() {
   const isPremium = localStorage.getItem('isPremium') === 'true';
   const premiumButton = document.getElementById('buy-premium-btn');
+  const downloadButton = document.getElementById('download-expenses-btn');
+
   if (isPremium) {
     premiumButton.textContent = "Now You Are a Premium User";
     premiumButton.disabled = true;
     premiumButton.style.backgroundColor = "#28a745";
     premiumButton.style.cursor = "not-allowed";
+
+    // Show download button for premium users
+    downloadButton.style.display = "block";
   } else {
     premiumButton.textContent = "Buy Premium Membership";
     premiumButton.disabled = false;
     premiumButton.style.backgroundColor = ""; // Reset styles
     premiumButton.style.cursor = "";
+    downloadButton.style.display = "none"; // Hide download button
   }
 }
+
+
+// Function to download expenses for premium users
+async function downloadExpenses() {
+  try {
+    const response = await fetch('/download-expenses', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download expenses');
+    }
+
+    const blob = await response.blob(); // Get the file data as a blob
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'expenses.csv'; // Set the file name
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } catch (error) {
+    console.error('Error downloading expenses:', error);
+    alert('An error occurred while downloading expenses');
+  }
+}
+
 
 // Function to handle forgot password form display
 function showForgotPasswordForm() {
