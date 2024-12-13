@@ -30,6 +30,17 @@
     <a href="leaderboard.html" class="view-leaderboard-btn">View Leaderboard</a>
 
     <h2>Your Expenses</h2>
+    <div class="pagination-container">
+      <label for="items-per-page">Items per page:</label>
+      <select id="items-per-page" onchange="fetchExpenses(1)">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+      </select>
+      <button id="prev-page" onclick="changePage(-1)">Previous</button>
+      <button id="next-page" onclick="changePage(1)">Next</button>
+    </div>
+
     <table id="expense-table">
       <thead>
         <tr>
@@ -44,6 +55,8 @@
         <!-- Expenses will be populated here -->
       </tbody>
     </table>
+
+    <p id="pagination-message"></p>
   </div>
   <script src="script.js"></script>
 </body>

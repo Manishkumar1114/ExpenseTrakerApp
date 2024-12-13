@@ -1,4 +1,6 @@
 require('dotenv').config();
+const helmet= require('helmet');
+const compression = require('compression');
 const express = require('express');
 const bodyParser = require('body-parser');
 const userController = require('./controllers/userController');
@@ -13,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(helmet());
+app.use(compression());
 
 // Debugging Middleware
 app.use((req, res, next) => {

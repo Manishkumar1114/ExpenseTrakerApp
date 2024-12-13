@@ -369,3 +369,44 @@ tbody tr:hover {
   top: 20px;
   right: 140px; /* Adjust based on spacing */
 }
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 20px;
+}
+
+.pagination-container label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.pagination-container select {
+  padding: 5px;
+  margin-right: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.pagination-container button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  background-color: #007bff; /* Blue color */
+  color: #fff; /* White text */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-container button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.pagination-container button:disabled {
+  background-color: #ccc; /* Gray color when disabled */
+  cursor: not-allowed;
+}
